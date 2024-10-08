@@ -47,8 +47,13 @@ npm run build || (echo "Failed to build Astro project" && exit 1)
 # Create start script
 cat > $BUILD_DIR/start.sh <<EOF
 #!/bin/bash
+export PATH="$BUILD_DIR/.nvm/versions/node/v$NODE_VERSION/bin:$PATH"
 npm start
 EOF
 chmod +x $BUILD_DIR/start.sh
+
+# Ensure all necessary files are in the correct location
+mkdir -p $BUILD_DIR/.profile.d
+echo "export PATH=\"$BUILD_DIR/.nvm/versions/node/v$NODE_VERSION/bin:\$PATH\"" > $BUILD_DIR/.profile.d/nodejs.sh
 
 echo "Build completed successfully"
