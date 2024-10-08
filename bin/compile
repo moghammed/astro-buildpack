@@ -35,11 +35,14 @@ npm ci || (echo "Failed to install dependencies" && exit 1)
 echo "Building Astro project"
 npm run build || (echo "Failed to build Astro project" && exit 1)
 
+# Install a simple static file server
+npm install --save-dev http-server
+
 # Create start script
 cat > $BUILD_DIR/start.sh <<EOF
 #!/bin/bash
 export PATH="/app/.heroku/node/bin:\$PATH"
-node ./dist/server/entry.mjs
+npx http-server ./dist -p \$PORT
 EOF
 chmod +x $BUILD_DIR/start.sh
 
