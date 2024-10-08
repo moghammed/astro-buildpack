@@ -1,0 +1,9 @@
+[buildpack]
+name = "Node.js and Nginx"
+version = "0.1.0"
+
+[[stacks]]
+id = "heroku-20"
+
+[[stacks]]
+id = "heroku-22"
