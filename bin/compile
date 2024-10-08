@@ -8,9 +8,6 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-# Create .node-version file if it doesn't exist
-echo "18.17.1" > $BUILD_DIR/.node-version
-
 # Load environment variables
 for env_file in $ENV_DIR/*; do
   if [ -f "$env_file" ]; then
@@ -18,20 +15,14 @@ for env_file in $ENV_DIR/*; do
   fi
 done
 
-# Install nvm
-export NVM_DIR="$BUILD_DIR/.nvm"
-mkdir -p $NVM_DIR
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-
-# Load nvm
-export NVM_DIR="$BUILD_DIR/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-# Install Node.js using nvm
-NODE_VERSION=$(cat $BUILD_DIR/.node-version)
+# Install Node.js
+NODE_VERSION="18.17.1"
 echo "Installing Node.js version $NODE_VERSION"
-nvm install $NODE_VERSION
-nvm use $NODE_VERSION
+curl -sL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" | tar xJ -C $BUILD_DIR
+mv $BUILD_DIR/node-v${NODE_VERSION}-linux-x64 $BUILD_DIR/nodejs
+
+# Add Node.js to PATH
+export PATH="$BUILD_DIR/nodejs/bin:$PATH"
 
 # Verify Node.js installation
 node --version
@@ -47,17 +38,13 @@ npm run build || (echo "Failed to build Astro project" && exit 1)
 # Create start script
 cat > $BUILD_DIR/start.sh <<EOF
 #!/bin/bash
-export NVM_DIR="$BUILD_DIR/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-nvm use $NODE_VERSION
+export PATH="$BUILD_DIR/nodejs/bin:\$PATH"
 node ./dist/server/entry.mjs
 EOF
 chmod +x $BUILD_DIR/start.sh
 
 # Ensure all necessary files are in the correct location
 mkdir -p $BUILD_DIR/.profile.d
-echo "export NVM_DIR=\"$BUILD_DIR/.nvm\"" > $BUILD_DIR/.profile.d/nodejs.sh
-echo "[ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\"" >> $BUILD_DIR/.profile.d/nodejs.sh
-echo "nvm use $NODE_VERSION" >> $BUILD_DIR/.profile.d/nodejs.sh
+echo "export PATH=\"$BUILD_DIR/nodejs/bin:\$PATH\"" > $BUILD_DIR/.profile.d/nodejs.sh
 
 echo "Build completed successfully"
