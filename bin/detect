@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [[ -f package.json && -f astro.config.mjs ]]; then
+if [[ -f package.json && -f astro.config.mjs && -f .node-version ]]; then
   echo "Astro" && exit 0
 else
-  exit 1
+  echo "Not an Astro app" && exit 1
 fi
