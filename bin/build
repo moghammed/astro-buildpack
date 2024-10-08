@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -e
+
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+# Install Node.js
+NODE_VERSION=$(cat $BUILD_DIR/.node-version || echo "18.x")
+curl -sL https://deb.nodesource.com/setup_${NODE_VERSION} | bash -
+apt-get install -y nodejs
+
+# Install dependencies and build the Astro project
+cd $BUILD_DIR
+npm ci
+npm run build
+
+# Install Nginx
+apt-get update
+apt-get install -y nginx
+
+# Create Nginx configuration
+cat > /etc/nginx/nginx.conf <<EOF
+worker_processes auto;
+error_log /dev/stderr;
+pid /tmp/nginx.pid;
+
+events {
+  worker_connections 1024;
+}
+
+http {
+  access_log /dev/stdout;
+  server_tokens off;
+  charset utf-8;
+  port_in_redirect off;
+
+  server {
+    listen \$PORT;
+    root $BUILD_DIR/dist;
+    index index.html;
+
+    location / {
+      try_files \$uri \$uri/ =404;
+    }
+  }
+}
+EOF
+
+# Create start script
+cat > $BUILD_DIR/start.sh <<EOF
+#!/bin/bash
+nginx -g "daemon off;"
+EOF
+chmod +x $BUILD_DIR/start.sh
