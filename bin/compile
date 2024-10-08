@@ -34,6 +34,8 @@ nvm use $NODE_VERSION
 node --version
 npm --version
 
+npm install sharp
+
 # Install dependencies and build the Astro project
 cd $BUILD_DIR
 echo "Installing dependencies"
