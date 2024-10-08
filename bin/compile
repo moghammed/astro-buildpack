@@ -47,9 +47,6 @@ npm run build || (echo "Failed to build Astro project" && exit 1)
 # Create start script
 cat > $BUILD_DIR/start.sh <<EOF
 #!/bin/bash
-export NVM_DIR="$BUILD_DIR/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-nvm use $NODE_VERSION
 npm start
 EOF
 chmod +x $BUILD_DIR/start.sh
