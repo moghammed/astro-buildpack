@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ -f package.json && -f astro.config.mjs ]]; then
-  echo "Node.js (Astro) + Nginx"
-  exit 0
+  echo "Node.js (Astro) + Nginx" && exit 0
 else
-  exit 1
+  echo "No astro detected" && exit 1
 fi
