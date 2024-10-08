@@ -1,5 +1,5 @@
 [buildpack]
-name = "Astro"
+name = "Node.js and Nginx"
 version = "0.1.0"
 
 [[stacks]]
@@ -10,6 +10,3 @@ id = "heroku-22"
 
 [[stacks]]
 id = "gliderlabs/herokuish:latest"
-
-[[stacks]]
-id = "dokku"
