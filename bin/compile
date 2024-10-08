@@ -4,6 +4,9 @@ echo "starting build"
 
 set -e
 
+BUILD_DIR=$1
+CACHE_DIR=$2
+
 # Install Node.js
 NODE_VERSION=$(cat $BUILD_DIR/.node-version || echo "18.x")
 curl -sL https://deb.nodesource.com/setup_${NODE_VERSION} | bash -
