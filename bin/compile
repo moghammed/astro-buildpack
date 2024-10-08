@@ -18,11 +18,11 @@ done
 # Install Node.js
 NODE_VERSION="18.17.1"
 echo "Installing Node.js version $NODE_VERSION"
-curl -sL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" | tar xJ -C $BUILD_DIR
-mv $BUILD_DIR/node-v${NODE_VERSION}-linux-x64 $BUILD_DIR/nodejs
+mkdir -p $BUILD_DIR/.heroku/node
+curl -sL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" | tar xJ -C $BUILD_DIR/.heroku/node --strip-components=1
 
 # Add Node.js to PATH
-export PATH="$BUILD_DIR/nodejs/bin:$PATH"
+export PATH="$BUILD_DIR/.heroku/node/bin:$PATH"
 
 # Verify Node.js installation
 node --version
@@ -38,13 +38,15 @@ npm run build || (echo "Failed to build Astro project" && exit 1)
 # Create start script
 cat > $BUILD_DIR/start.sh <<EOF
 #!/bin/bash
-export PATH="$BUILD_DIR/nodejs/bin:\$PATH"
+export PATH="/app/.heroku/node/bin:\$PATH"
 node ./dist/server/entry.mjs
 EOF
 chmod +x $BUILD_DIR/start.sh
 
 # Ensure all necessary files are in the correct location
 mkdir -p $BUILD_DIR/.profile.d
-echo "export PATH=\"$BUILD_DIR/nodejs/bin:\$PATH\"" > $BUILD_DIR/.profile.d/nodejs.sh
+cat > $BUILD_DIR/.profile.d/nodejs.sh <<EOF
+export PATH="/app/.heroku/node/bin:\$PATH"
+EOF
 
 echo "Build completed successfully"
